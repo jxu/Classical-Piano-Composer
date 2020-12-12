@@ -35,19 +35,22 @@ def get_notes():
 
         print("Parsing %s" % file)
 
-        notes_to_parse = None
+        notes_to_parse = midi.flat.notes
 
-        try: # file has instrument parts
-            s2 = instrument.partitionByInstrument(midi)
-            notes_to_parse = s2.parts[0].recurse() 
-        except: # file has notes in a flat structure
-            notes_to_parse = midi.flat.notes
+
+        #try: # file has instrument parts
+        #    s2 = instrument.partitionByInstrument(midi)
+        #    notes_to_parse = s2.parts[0].recurse() 
+        #except: # file has notes in a flat structure
+        #    notes_to_parse = midi.flat.notes
 
         for element in notes_to_parse:
             if isinstance(element, note.Note):
                 notes.append(str(element.pitch))
             elif isinstance(element, chord.Chord):
                 notes.append('.'.join(str(n) for n in element.normalOrder))
+                
+        #print(notes)
 
     with open('data/notes', 'wb') as filepath:
         pickle.dump(notes, filepath)
@@ -120,7 +123,7 @@ def train(model, network_input, network_output):
     )
     callbacks_list = [checkpoint]
 
-    model.fit(network_input, network_output, epochs=200, batch_size=128, callbacks=callbacks_list)
+    model.fit(network_input, network_output, epochs=300, batch_size=128, callbacks=callbacks_list)
 
 if __name__ == '__main__':
     train_network()

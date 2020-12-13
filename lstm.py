@@ -37,20 +37,12 @@ def get_notes():
 
         notes_to_parse = midi.flat.notes
 
-
-        #try: # file has instrument parts
-        #    s2 = instrument.partitionByInstrument(midi)
-        #    notes_to_parse = s2.parts[0].recurse() 
-        #except: # file has notes in a flat structure
-        #    notes_to_parse = midi.flat.notes
-
         for element in notes_to_parse:
             if isinstance(element, note.Note):
                 notes.append(str(element.pitch))
             elif isinstance(element, chord.Chord):
                 notes.append('.'.join(str(n) for n in element.normalOrder))
                 
-        #print(notes)
 
     with open('data/notes', 'wb') as filepath:
         pickle.dump(notes, filepath)
@@ -63,6 +55,8 @@ def prepare_sequences(notes, n_vocab):
 
     # get all pitch names
     pitchnames = sorted(set(item for item in notes))
+
+    print("pitchnames", pitchnames)
 
      # create a dictionary to map pitches to integers
     note_to_int = dict((note, number) for number, note in enumerate(pitchnames))

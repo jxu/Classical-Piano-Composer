@@ -39,10 +39,10 @@ def get_notes():
 
         for element in notes_to_parse:
             if isinstance(element, note.Note):
-                notes.append(str(element.pitch))
+                notes.append(str(element.pitch)+"="+str(element.duration.quarterLength))
+
             elif isinstance(element, chord.Chord):
-                notes.append('.'.join(str(n) for n in element.normalOrder))
-                
+                notes.append('&'.join(str(n) for n in element.normalOrder)+ "=" + str(element.duration.quarterLength)) 
 
     with open('data/notes', 'wb') as filepath:
         pickle.dump(notes, filepath)
@@ -112,12 +112,12 @@ def train(model, network_input, network_output):
         filepath,
         monitor='loss',
         verbose=0,
-        save_best_only=True,
+        save_best_only=False,
         mode='min'
     )
     callbacks_list = [checkpoint]
 
-    model.fit(network_input, network_output, epochs=300, batch_size=128, callbacks=callbacks_list)
+    model.fit(network_input, network_output, epochs=500, batch_size=128, callbacks=callbacks_list)
 
 if __name__ == '__main__':
     train_network()

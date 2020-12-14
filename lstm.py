@@ -24,7 +24,12 @@ def train_network():
 
     model = create_network(network_input, n_vocab)
 
-    train(model, network_input, network_output)
+    history = train(model, network_input, network_output)
+    
+    with open('model_history.pkl', 'wb') as filepath:
+        pickle.dump(history, filepath)
+
+
 
 def get_notes():
     """ Get all the notes and chords from the midi files in the ./midi_songs directory """
@@ -41,7 +46,7 @@ def get_notes():
             element_length = element.duration.quarterLength
 
             valid_lens = (0.25, 0.5, 1.0, 2.0)
-            element_length = min(valid_lens, key=lambda x: abs(x-element_length))
+            #element_length = min(valid_lens, key=lambda x: abs(x-element_length))
 
             if isinstance(element, note.Note):
                 notes.append(str(element.pitch)+"="+str(element_length))
@@ -56,7 +61,7 @@ def get_notes():
 
 def prepare_sequences(notes, n_vocab):
     """ Prepare the sequences used by the Neural Network """
-    sequence_length = 100
+    sequence_length = 25
 
     # get all pitch names
     pitchnames = sorted(set(item for item in notes))
@@ -122,7 +127,9 @@ def train(model, network_input, network_output):
     )
     callbacks_list = [checkpoint]
 
-    model.fit(network_input, network_output, epochs=500, batch_size=128, callbacks=callbacks_list)
+    return model.fit(network_input, network_output, epochs=10,
+            validation_split=0.2,
+            batch_size=128, callbacks=callbacks_list)
 
 if __name__ == '__main__':
     train_network()
